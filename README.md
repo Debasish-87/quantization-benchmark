@@ -4,8 +4,6 @@
 
 A reproducible, production-style benchmark that serves the same model (`Qwen2.5-3B-Instruct`) in three precisions under one identical vLLM protocol, and measures **throughput, latency (TTFT / TPOT / ITL / E2E at P50-P95-P99), GPU memory, failure rate, cost and accuracy** across five concurrency levels (1 to 32).
 
-![Summary dashboard](docs/images/summary_dashboard.png)
-
 ---
 
 ## Table of contents
