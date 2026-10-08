@@ -4,6 +4,8 @@
 
 A reproducible, production-style benchmark that serves the same model (`Qwen2.5-3B-Instruct`) in three precisions under one identical vLLM protocol, and measures **throughput, latency (TTFT / TPOT / ITL / E2E at P50-P95-P99), GPU memory, failure rate, cost and accuracy** across five concurrency levels (1 to 32).
 
+<!-- Image not yet committed (docs/images is empty): ![Summary dashboard](docs/images/summary_dashboard.png) -->
+
 ---
 
 ## Table of contents
@@ -156,14 +158,11 @@ quant-benchmark/
 │   └── results.py                <- metric extraction, CSV/JSON writers, per-metric charts
 ├── resultcode/
 │   ├── merge_results.py          <- joins performance CSV with GSM8K summary -> combined/
-│   ├── make_plots.py             <- 5 combined charts
-│   └── make_analysis.py          <- deep-dive figures + docs/derived_metrics.json (used by this README)
+│   └── make_plots.py             <- 5 combined charts
 ├── notebook/
 │   └── quantization-performance-benchmark.ipynb   <- the Kaggle session that produced the results
 ├── profiling/README.md           <- plan for Nsight follow-up (profiling is intentionally kept out of the main run)
-├── docs/
-│   ├── derived_metrics.json      <- every derived number quoted in this README
-│   └── images/                   <- figures used in this README
+├── docs/                         <- (figures and derived_metrics.json not yet committed, see 9.8)
 └── merged-results/
     ├── performance/              <- benchmark_results.csv, benchmark_aggregate.csv, environment.json,
     │   └── raw/                     run_config.json, accuracy.json (smoke), PNG charts, raw vLLM JSON, server logs
@@ -186,7 +185,6 @@ flowchart LR
     PERF --> MERGE["merge_results.py"]
     ACC --> MERGE
     MERGE --> COMB["combined/ + plots"]
-    COMB --> AN["make_analysis.py<br/>docs/images"]
 ```
 
 **Execution flow of `run_benchmark.py`**
@@ -242,7 +240,6 @@ Copy the generated `results/` files into `merged-results/performance/` and `resu
 ```bash
 python resultcode/merge_results.py     # -> merged-results/combined/combined_results.{csv,json}
 python resultcode/make_plots.py        # -> merged-results/combined/plots/*.png
-python resultcode/make_analysis.py     # -> docs/images/*.png and docs/derived_metrics.json
 ```
 
 ### Configuration reference (`config.yaml`)
@@ -287,7 +284,7 @@ Speed-up of output throughput relative to FP16:
 | GPTQ INT8 | 2.46x | 1.67x | 1.60x | 1.48x | 1.41x |
 | GPTQ INT4 | **3.25x** | **2.18x** | **2.02x** | **1.75x** | **1.59x** |
 
-![Speed-up vs FP16](docs/images/speedup_vs_fp16.png)
+<!-- Image not yet committed (docs/images is empty): ![Speed-up vs FP16](docs/images/speedup_vs_fp16.png) -->
 
 - At **C=32**, INT8 is **+41.4%** and INT4 **+58.7%** faster than FP16, and INT4 is **+12.2%** faster than INT8.
 - The advantage **shrinks as concurrency grows** (INT4: 2.18x at C=4 to 1.59x at C=32), which is the expected signature of decoding moving from memory-bandwidth-bound toward compute-bound as batches grow.
@@ -371,7 +368,7 @@ The `gpu_0_peak_vram_mb` column reports **13,975.2 MB for FP16 and 13,543.2 MB f
 
 That chart is accurate but uninformative: vLLM pre-allocates whatever fits inside `gpu_memory_utilization x total memory`, so total device usage always lands near 0.90 of 15 GiB regardless of how small the model is. The real memory story is in the vLLM startup logs:
 
-![Memory budget breakdown](docs/images/memory_breakdown.png)
+<!-- Image not yet committed (docs/images is empty): ![Memory budget breakdown](docs/images/memory_breakdown.png) -->
 
 | | FP16 | GPTQ INT8 | GPTQ INT4 |
 |---|---:|---:|---:|
@@ -406,7 +403,10 @@ Compute cost per **one million generated tokens**, assuming the GPU is fully use
 | GPTQ INT8 | $1.791 | $0.486 | $0.290 | $0.198 | $0.153 |
 | GPTQ INT4 | **$1.359** | **$0.372** | **$0.230** | **$0.167** | **$0.137** |
 
-![Cost per million tokens](docs/images/cost_per_million_tokens.png)
+> [!NOTE]
+> "Cost per 1M tokens" is computed from steady-state output throughput (`0.35 / 3600 / tok_per_s x 1e6`). The "Est. cost" column in the appendix is computed from wall time, which also includes the 10 warm-up requests, so it is higher per token.
+
+<!-- Image not yet committed (docs/images is empty): ![Cost per million tokens](docs/images/cost_per_million_tokens.png) -->
 
 At C=32, INT8 is **29%** and INT4 **37%** cheaper per generated token than FP16. At low concurrency the gap is larger (C=1: $4.41 vs $1.36), but see the FP16 C=1 caveat.
 
@@ -446,7 +446,7 @@ A separate 10-prompt API smoke test (`benchmark/accuracy.py`) scored **9/10 (90%
 | GPTQ INT8 | 78/100 | **78%** | 68.9 - 85.0% | +3 pp | 84/100 | 84% | 2 / 100 | 719 chars |
 | GPTQ INT4 | 72/100 | **72%** | 62.5 - 79.9% | -3 pp | 81/100 | 81% | 11 / 100 | 795 chars |
 
-![GSM8K accuracy](docs/images/gsm8k_accuracy_ci.png)
+<!-- Image not yet committed (docs/images is empty): ![GSM8K accuracy](docs/images/gsm8k_accuracy_ci.png) -->
 
 *Solid bars: the score as computed by the pipeline. Hatched bars: the same outputs re-scored by comparing the first number in the extracted answer numerically. Error bars: 95% Wilson confidence intervals.*
 
@@ -545,7 +545,7 @@ vLLM's engine config in the logs shows `enable_prefix_caching=True`, and every `
 | C=32 | 1,430 | 1,378 | 1,430 |
 | *Prompt tokens sent per run* | *54,100* | *54,100* | *54,100* |
 
-![Prefix-cache effect](docs/images/prefix_cache_effect.png)
+<!-- Image not yet committed (docs/images is empty): ![Prefix-cache effect](docs/images/prefix_cache_effect.png) -->
 
 So **C=1 prefilled ~52.8k tokens, while every later run prefilled only ~1.4k (about 97% fewer)**. This explains why P50 TTFT *drops* when concurrency rises from 1 to 4, which would otherwise be impossible:
 
@@ -588,6 +588,7 @@ The smoke test has 10 fixed trivia/arithmetic cases and scored 9/10 for all mode
 - Notebook cell 22 rewrites `benchmark/server.py` to launch `python -m vllm.entrypoints.cli.main serve`; the repository copy still calls the `vllm` executable.
 - `datasets` is needed by the GSM8K evaluator but is not listed in `requirements.txt`.
 - The generated output directory is `results/`, while the shipped, merged artifacts live in `merged-results/` (assembled by hand from two Kaggle sessions).
+- `resultcode/make_analysis.py`, `docs/derived_metrics.json` and all `docs/images/*.png` referenced in earlier versions of this README are **not committed**; the derived numbers (speed-ups, cost, memory, prefix-cache estimates, McNemar tests) were computed offline and are reproducible by hand from the raw CSV/JSON and server logs. The corresponding image lines above are commented out until the figures are added.
 
 ### 9.9 Environment capture bug
 
@@ -626,8 +627,8 @@ Highest value first:
 | `merged-results/accuracy/results/accuracy/gsm8k_*.json` | Per-question GSM8K records (question, reference, prediction, correctness, full model output) |
 | `merged-results/combined/combined_results.{csv,json}` | Performance rows joined with GSM8K results |
 | `merged-results/combined/plots/*.png` | 5 combined charts |
-| `docs/images/*.png` | Figures generated by `resultcode/make_analysis.py` |
-| `docs/derived_metrics.json` | Speed-ups, costs, memory, prefix-cache estimates, GSM8K statistics |
+| `docs/images/*.png` | *Not yet committed* (generated by a script that is not in the repo) |
+| `docs/derived_metrics.json` | *Not yet committed*; all derived numbers in this README are reproducible from the raw files above |
 
 ---
 
