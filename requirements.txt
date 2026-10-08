@@ -1,0 +1,8 @@
+vllm[bench]
+openai
+aiohttp
+requests
+pyyaml
+pandas
+matplotlib
+nvidia-ml-py

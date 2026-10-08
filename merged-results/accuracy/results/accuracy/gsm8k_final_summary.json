@@ -1,0 +1,41 @@
+[
+  {
+    "benchmark": "gsm8k",
+    "quantization": "fp16",
+    "model": "Qwen/Qwen2.5-3B-Instruct",
+    "samples": 100,
+    "correct": 75,
+    "accuracy": 0.75,
+    "accuracy_percent": 75.0,
+    "elapsed_seconds": 981.91,
+    "timestamp": "2026-10-08T10:43:02Z",
+    "accuracy_delta_vs_fp16": 0.0,
+    "accuracy_delta_pp_vs_fp16": 0.0
+  },
+  {
+    "benchmark": "gsm8k",
+    "quantization": "int8",
+    "model": "Qwen/Qwen2.5-3B-Instruct-GPTQ-Int8",
+    "samples": 100,
+    "correct": 78,
+    "accuracy": 0.78,
+    "accuracy_percent": 78.0,
+    "elapsed_seconds": 393.6,
+    "timestamp": "2026-10-08T10:50:56Z",
+    "accuracy_delta_vs_fp16": 0.03,
+    "accuracy_delta_pp_vs_fp16": 3.0
+  },
+  {
+    "benchmark": "gsm8k",
+    "quantization": "int4",
+    "model": "Qwen/Qwen2.5-3B-Instruct-GPTQ-Int4",
+    "samples": 100,
+    "correct": 72,
+    "accuracy": 0.72,
+    "accuracy_percent": 72.0,
+    "elapsed_seconds": 322.64,
+    "timestamp": "2026-10-08T10:57:36Z",
+    "accuracy_delta_vs_fp16": -0.03,
+    "accuracy_delta_pp_vs_fp16": -3.0
+  }
+]

@@ -1,0 +1,23 @@
+{
+  "fp16": {
+    "score": 0.9,
+    "score_percent": 90.0,
+    "passed": true,
+    "cases": 10,
+    "correct": 9
+  },
+  "int8": {
+    "score": 0.9,
+    "score_percent": 90.0,
+    "passed": true,
+    "cases": 10,
+    "correct": 9
+  },
+  "int4": {
+    "score": 0.9,
+    "score_percent": 90.0,
+    "passed": true,
+    "cases": 10,
+    "correct": 9
+  }
+}
